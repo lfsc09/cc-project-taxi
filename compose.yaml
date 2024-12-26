@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: ./
+      args:
+        - NODE_PORT=8080
+    container_name: "nodejs-<project-name>"
+    cpu_count: 1
+    mem_limit: 512m
+    tty: true
+    ports:
+      - 4000:80
