@@ -1,8 +1,11 @@
 import express from 'express';
 import pgPromise from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
-import { AccountDAODatabase } from './AccountDAO';
+import AccountDAODatabase from './AccountDAODatabase';
 import GetAccount from './GetAccount';
+import GetRide from './GetRide';
+import RequestRide from './RequestRide';
+import RideDAODatabase from './RideDAODatabase';
 import Signup from './Signup';
 
 const POSTGRES_PASS = 123456;
@@ -17,11 +20,32 @@ const main = (): void => {
     dbConn = pgPromise()(`postgres://postgres:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`) ?? undefined;
     if (!dbConn) throw new Error('Unable to connect to PostgreSQL.');
     const accountDAO = new AccountDAODatabase(dbConn);
+    const rideDAO = new RideDAODatabase(dbConn);
     const app = express();
 
     app.use(express.json());
 
-    app.post('/signup', async function (req: any, res: any) {
+    app.get('/getAccount', async function (req: express.Request, res: express.Response) {
+        const accountId = (req.query?.id ?? '') as string;
+        try {
+            const output = await new GetAccount(accountDAO).execute(accountId);
+            res.json(output);
+        } catch (error: any) {
+            res.status(404).json({ message: error.message });
+        }
+    });
+
+    app.get('/getRide', async function (req: express.Request, res: express.Response) {
+        const rideId = (req.query?.id ?? '') as string;
+        try {
+            const output = await new GetRide(rideDAO).execute(rideId);
+            res.json(output);
+        } catch (error: any) {
+            res.status(404).json({ message: error.message });
+        }
+    });
+
+    app.post('/signup', async function (req: express.Request, res: express.Response) {
         const input = req.body;
         try {
             const output = await new Signup(accountDAO).execute(input);
@@ -31,13 +55,13 @@ const main = (): void => {
         }
     });
 
-    app.get('/getAccount', async function (req: any, res: any) {
-        const accountId = req.query?.id ?? '';
+    app.get('/requestRide', async function (req: express.Request, res: express.Response) {
+        const input = req.body;
         try {
-            const output = await new GetAccount(accountDAO).execute(accountId);
+            const output = await new RequestRide(rideDAO, accountDAO).execute(input);
             res.json(output);
         } catch (error: any) {
-            res.status(404).json({ message: error.message });
+            res.status(422).json({ message: error.message });
         }
     });
 

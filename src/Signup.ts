@@ -5,7 +5,7 @@ import { validateCpf } from './validateCpf';
 export default class Signup {
     constructor(private readonly accountDAO: AccountDAO) {}
 
-    async execute(input: any): Promise<{ accountId: string }> {
+    async execute(input: any): Promise<SignupOutput> {
         if (!this.#isNameValid(input.name)) throw new Error('Invalid name.');
         if (!this.#isEmailValid(input.email)) throw new Error('Invalid email.');
         if (!validateCpf(input.cpf)) throw new Error('Invalid cpf.');
@@ -14,9 +14,9 @@ export default class Signup {
         const accountExists = await this.accountDAO.isDuplicateByEmail(input.email);
         if (accountExists) throw new Error('Duplicated account.');
 
-        const newId = crypto.randomUUID();
+        const newAccountId = crypto.randomUUID();
         await this.accountDAO.createAccount({
-            account_id: newId,
+            accountId: newAccountId,
             name: input.name,
             email: input.email,
             cpf: input.cpf,
@@ -25,7 +25,7 @@ export default class Signup {
             password: input.password,
         });
 
-        return { accountId: newId };
+        return { accountId: newAccountId };
     }
 
     #isNameValid(name: string): boolean {
@@ -39,4 +39,17 @@ export default class Signup {
     #isCarPlaceValid(plate: string): boolean {
         return !!plate.match(/[A-Z]{3}[0-9]{4}/);
     }
+}
+
+export interface SignupInput {
+    name: string;
+    email: string;
+    cpf: string;
+    carPlate?: string;
+    isPassenger: boolean;
+    isDriver: boolean;
+    password: string;
+}
+export interface SignupOutput {
+    accountId: string;
 }
