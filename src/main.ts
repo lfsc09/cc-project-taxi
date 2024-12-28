@@ -14,39 +14,39 @@ export type DbConn = pgPromise.IDatabase<{}, pg.IClient>;
 let dbConn: DbConn | undefined;
 
 const main = (): void => {
-  dbConn = pgPromise()(`postgres://postgres:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`) ?? undefined;
-  if (!dbConn) throw new Error('Unable to connect to PostgreSQL.');
-  const accountDAO = new AccountDAODatabase(dbConn);
-  const app = express();
+    dbConn = pgPromise()(`postgres://postgres:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`) ?? undefined;
+    if (!dbConn) throw new Error('Unable to connect to PostgreSQL.');
+    const accountDAO = new AccountDAODatabase(dbConn);
+    const app = express();
 
-  app.use(express.json());
+    app.use(express.json());
 
-  app.post('/signup', async function (req: any, res: any) {
-    const input = req.body;
-    try {
-      const output = await new Signup(accountDAO).execute(input);
-      res.json(output);
-    } catch (error: any) {
-      res.status(422).json({ message: error.message });
-    }
-  });
+    app.post('/signup', async function (req: any, res: any) {
+        const input = req.body;
+        try {
+            const output = await new Signup(accountDAO).execute(input);
+            res.json(output);
+        } catch (error: any) {
+            res.status(422).json({ message: error.message });
+        }
+    });
 
-  app.get('/getAccount', async function (req: any, res: any) {
-    const accountId = req.query?.id ?? '';
-    try {
-      const output = await new GetAccount(accountDAO).execute(accountId);
-      res.json(output);
-    } catch (error: any) {
-      res.status(404).json({ message: error.message });
-    }
-  });
+    app.get('/getAccount', async function (req: any, res: any) {
+        const accountId = req.query?.id ?? '';
+        try {
+            const output = await new GetAccount(accountDAO).execute(accountId);
+            res.json(output);
+        } catch (error: any) {
+            res.status(404).json({ message: error.message });
+        }
+    });
 
-  app.listen(3000);
+    app.listen(3000);
 };
 
 try {
-  main();
+    main();
 } catch (error: any) {
-  console.error(error);
-  dbConn?.$pool.end();
+    console.error(error);
+    dbConn?.$pool.end();
 }
