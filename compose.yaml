@@ -1,12 +1,31 @@
 services:
-  app:
+  nodejs:
     build:
       context: ./
       args:
         - NODE_PORT=8080
-    container_name: "nodejs-<project-name>"
+    container_name: 'nodejs-cc-project-taxi'
     cpu_count: 1
     mem_limit: 512m
     tty: true
     ports:
       - 4000:80
+    depends_on:
+      - postgres
+    profiles:
+      - prod
+  postgres:
+    image: postgres:latest
+    container_name: postgres-cc-project-taxi
+    cpu_count: 1
+    mem_limit: 512m
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: app
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgresql-create.sql:/docker-entrypoint-initdb.d/init.sql
+    profiles:
+      - dev
+      - prod
