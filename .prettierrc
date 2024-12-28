@@ -1,0 +1,10 @@
+{
+	"singleQuote": true,
+	"tabWidth": 2,
+	"printWidth": 180,
+	"bracketSameLine": false,
+	"singleAttributePerLine": true,
+	"plugins": [
+        "prettier-plugin-organize-imports"
+    ]
+}
