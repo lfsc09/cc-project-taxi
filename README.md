@@ -1,4 +1,4 @@
-# <project-name>
+# Taxi Project
 
 ## Initialize Node project
 
@@ -11,13 +11,15 @@ npm install
 ### For developing
 
 ```bash
+# To run only de DB container
+docker compose --profile dev up --build --detach
 npm run dev
 ```
 
 ## Build
 
 ```bash
-docker compose up --build --detach
+docker compose --profile prod up --build --detach
 ```
 
 ```bash

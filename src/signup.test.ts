@@ -1,6 +1,6 @@
 import pgPromise from 'pg-promise';
-import { signup } from '../src/signup';
-import { getAccount } from '../src/getAcount';
+import { signup } from './signup';
+import { getAccount } from './getAcount';
 
 describe('signup', () => {
   const POSTGRES_PASS = 123456;
