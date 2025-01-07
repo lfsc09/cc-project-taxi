@@ -1,22 +1,21 @@
-import AccountDAOMemory from '../../src/AccountDAOMemory';
-import RequestRide, { RequestRideOutput } from '../../src/RequestRide';
-import RideDAOMemory from '../../src/RideDAOMemory';
-import Signup, { SignupOutput } from '../../src/Signup';
+import AccountDAOMemory from '../../src/infra/dao/Account/AccountDAOMemory';
+import RideDAOMemory from '../../src/infra/dao/Ride/RideDAOMemory';
+import Registry from '../../src/infra/DI';
+import RequestRide, { RequestRideOutput } from '../../src/usecases/RequestRide';
+import Signup, { SignupOutput } from '../../src/usecases/Signup';
 
 describe('Usecase: RequestRide', () => {
-    let accountDAO: AccountDAOMemory;
-    let rideDAO: RideDAOMemory;
     let requestRide: RequestRide;
 
     beforeEach(() => {
-        accountDAO = new AccountDAOMemory();
-        rideDAO = new RideDAOMemory();
-        requestRide = new RequestRide(rideDAO, accountDAO);
+        Registry.getInstance().provide('accountDAO', new AccountDAOMemory());
+        Registry.getInstance().provide('rideDAO', new RideDAOMemory());
+        requestRide = new RequestRide();
     });
 
     it('Should create the Ride', async () => {
         const inputAccount = { name: 'Marco Prosta', email: 'marco@gmail.com', cpf: '97456321558', isPassenger: true, isDriver: false, password: '123456' };
-        const outputSignup = (await new Signup(accountDAO).execute(inputAccount)) as SignupOutput;
+        const outputSignup = (await new Signup().execute(inputAccount)) as SignupOutput;
         expect(outputSignup?.accountId).toBeDefined();
         const intputRide = {
             passengerId: outputSignup.accountId,
@@ -32,7 +31,7 @@ describe('Usecase: RequestRide', () => {
 
     it('Must fail to create Ride [Not a passenger]', async () => {
         const inputAccount = { name: 'Marco Prosta', email: 'marco@gmail.com', cpf: '97456321558', carPlate: 'AAA0000', isPassenger: false, isDriver: true, password: '123456' };
-        const outputSignup = (await new Signup(accountDAO).execute(inputAccount)) as SignupOutput;
+        const outputSignup = (await new Signup().execute(inputAccount)) as SignupOutput;
         expect(outputSignup?.accountId).toBeDefined();
         const intputRide = {
             passengerId: outputSignup.accountId,
@@ -46,7 +45,7 @@ describe('Usecase: RequestRide', () => {
 
     it('Must fail to create Ride [Cannot request another ride]', async () => {
         const inputAccount = { name: 'Marco Prosta', email: 'marco@gmail.com', cpf: '97456321558', isPassenger: true, isDriver: false, password: '123456' };
-        const outputSignup = (await new Signup(accountDAO).execute(inputAccount)) as SignupOutput;
+        const outputSignup = (await new Signup().execute(inputAccount)) as SignupOutput;
         expect(outputSignup?.accountId).toBeDefined();
         const intputRide1 = {
             passengerId: outputSignup.accountId,

@@ -1,10 +1,12 @@
-import RideDAO, { GetRideByIdOutput } from './RideDAO';
+import RideDAO, { GetRideByIdOutput } from '../infra/dao/Ride/RideDAO';
+import { inject } from '../infra/DI';
 
 export default class GetRide {
-    constructor(private readonly rideDAO: RideDAO) {}
+    @inject('rideDAO')
+    rideDAO?: RideDAO;
 
     async execute(rideId: string): Promise<GetRideOutput> {
-        const ride = await this.rideDAO.getRideById(rideId);
+        const ride = await this.rideDAO?.getRideById(rideId);
         if (!ride) throw new Error('Not Found.');
         return ride;
     }

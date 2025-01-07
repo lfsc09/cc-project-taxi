@@ -1,13 +1,13 @@
-import AccountDAOMemory from '../../src/AccountDAOMemory';
-import Signup, { SignupOutput } from '../../src/Signup';
+import Signup, { SignupOutput } from '../../src//usecases/Signup';
+import AccountDAOMemory from '../../src/infra/dao/Account/AccountDAOMemory';
+import Registry from '../../src/infra/DI';
 
 describe('Usecase: Signup', () => {
-    let accountDAO: AccountDAOMemory;
     let signup: Signup;
 
     beforeEach(() => {
-        accountDAO = new AccountDAOMemory();
-        signup = new Signup(accountDAO);
+        Registry.getInstance().provide('accountDAO', new AccountDAOMemory());
+        signup = new Signup();
     });
 
     it('Should create Passenger Account', async () => {

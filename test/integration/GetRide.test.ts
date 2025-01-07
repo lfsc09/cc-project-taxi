@@ -1,23 +1,22 @@
-import AccountDAOMemory from '../../src/AccountDAOMemory';
-import GetRide from '../../src/GetRide';
-import RequestRide, { RequestRideOutput } from '../../src/RequestRide';
-import RideDAOMemory from '../../src/RideDAOMemory';
-import Signup, { SignupOutput } from '../../src/Signup';
+import Registry from '../../src/infra/DI';
+import AccountDAOMemory from '../../src/infra/dao/Account/AccountDAOMemory';
+import RideDAOMemory from '../../src/infra/dao/Ride/RideDAOMemory';
+import GetRide from '../../src/usecases/GetRide';
+import RequestRide, { RequestRideOutput } from '../../src/usecases/RequestRide';
+import Signup, { SignupOutput } from '../../src/usecases/Signup';
 
 describe('Usecase: GetRide', () => {
-    let rideDAO: RideDAOMemory;
-    let accountDAO: AccountDAOMemory;
     let getRide: GetRide;
 
     beforeEach(() => {
-        rideDAO = new RideDAOMemory();
-        accountDAO = new AccountDAOMemory();
-        getRide = new GetRide(rideDAO);
+        Registry.getInstance().provide('accountDAO', new AccountDAOMemory());
+        Registry.getInstance().provide('rideDAO', new RideDAOMemory());
+        getRide = new GetRide();
     });
 
     it('Should return Ride', async () => {
         const inputAccount = { name: 'Marco Prosta', email: 'marco@gmail.com', cpf: '97456321558', isPassenger: true, isDriver: false, password: '123456' };
-        const outputSignup = (await new Signup(accountDAO).execute(inputAccount)) as SignupOutput;
+        const outputSignup = (await new Signup().execute(inputAccount)) as SignupOutput;
         const accountId = outputSignup?.accountId;
         expect(accountId).toBeDefined();
         const inputRide = {
@@ -27,7 +26,7 @@ describe('Usecase: GetRide', () => {
             toLat: 0,
             toLong: 0,
         };
-        const outputRequestRide = (await new RequestRide(rideDAO, accountDAO).execute(inputRide)) as RequestRideOutput;
+        const outputRequestRide = (await new RequestRide().execute(inputRide)) as RequestRideOutput;
         const rideId = outputRequestRide?.rideId;
         expect(rideId).toBeDefined();
 

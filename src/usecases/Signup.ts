@@ -1,9 +1,11 @@
 import crypto from 'crypto';
-import AccountDAO from './AccountDAO';
-import { validateCpf } from './validateCpf';
+import { validateCpf } from '../core/validateCpf';
+import { inject } from '../infra/DI';
+import AccountDAO from '../infra/dao/Account/AccountDAO';
 
 export default class Signup {
-    constructor(private readonly accountDAO: AccountDAO) {}
+    @inject('accountDAO')
+    accountDAO?: AccountDAO;
 
     async execute(input: any): Promise<SignupOutput> {
         if (!this.#isNameValid(input.name)) throw new Error('Invalid name.');
@@ -11,11 +13,11 @@ export default class Signup {
         if (!validateCpf(input.cpf)) throw new Error('Invalid cpf.');
         if (!!input.isDriver && !this.#isCarPlaceValid(input.carPlate)) throw new Error('Invalid car plate.');
 
-        const accountExists = await this.accountDAO.isDuplicateByEmail(input.email);
+        const accountExists = await this.accountDAO?.isDuplicateByEmail(input.email);
         if (accountExists) throw new Error('Duplicated account.');
 
         const newAccountId = crypto.randomUUID();
-        await this.accountDAO.createAccount({
+        await this.accountDAO?.createAccount({
             accountId: newAccountId,
             name: input.name,
             email: input.email,
