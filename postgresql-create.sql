@@ -1,30 +1,39 @@
-DROP schema if EXISTS ccca cascade;
+drop schema if exists ccca cascade;
 
-CREATE schema ccca;
+create schema ccca;
 
-CREATE TABLE
+create table
     ccca.account (
-        account_id uuid PRIMARY key,
-        name text NOT NULL,
-        email text NOT NULL,
-        cpf text NOT NULL,
-        car_plate text NULL,
-        is_passenger BOOLEAN NOT NULL DEFAULT FALSE,
-        is_driver BOOLEAN NOT NULL DEFAULT FALSE,
-        password text NOT NULL
+        account_id uuid primary key,
+        name text not null,
+        email text not null,
+        cpf text not null,
+        car_plate text null,
+        is_passenger boolean not null default false,
+        is_driver boolean not null default false,
+        password text not null
     );
 
-CREATE TABLE
+create table
     ccca.ride (
         ride_id uuid,
         passenger_id uuid,
         driver_id uuid,
         status text,
-        fare NUMERIC,
-        distance NUMERIC,
-        from_lat NUMERIC,
-        from_long NUMERIC,
-        to_lat NUMERIC,
-        to_long NUMERIC,
-        date TIMESTAMP
+        fare numeric,
+        distance numeric,
+        from_lat numeric,
+        from_long numeric,
+        to_lat numeric,
+        to_long numeric,
+        date timestamp
+    );
+
+create table
+    ccca.position (
+        position_id uuid,
+        ride_id uuid,
+        lat numeric,
+        long numeric,
+        date timestamp
     );

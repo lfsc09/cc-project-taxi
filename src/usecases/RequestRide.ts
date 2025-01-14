@@ -1,37 +1,26 @@
-import AccountDAO from '../infra/dao/Account/AccountDAO';
-import RideDAO from '../infra/dao/Ride/RideDAO';
+import Ride from '../core/entity/Ride';
 import { inject } from '../infra/DI';
+import AccountRepository from '../infra/repository/Account/AccountRepository';
+import RideRepository from '../infra/repository/Ride/RideRepository';
 
 export default class RequestRide {
-    @inject('accountDAO')
-    accountDAO?: AccountDAO;
-    @inject('rideDAO')
-    rideDAO?: RideDAO;
+    @inject('accountRepository')
+    accountRepository?: AccountRepository;
+    @inject('rideRepository')
+    rideRepository?: RideRepository;
 
     async execute(input: RequestRideInput): Promise<RequestRideOutput> {
-        const isPassenger = await this.accountDAO?.isAccountPassenger(input.passengerId);
+        const newRide = Ride.create(input.passengerId, input.fromLat, input.fromLong, input.toLat, input.toLong);
+
+        const isPassenger = await this.accountRepository?.isAccountPassenger(newRide.getPassengerId());
         if (!isPassenger) throw new Error('Not a Passenger.');
 
-        const hasUncompletedRides = await this.rideDAO?.hasUncompletedRides(input.passengerId);
+        const hasUncompletedRides = await this.rideRepository?.hasUncompletedRides(newRide.getPassengerId());
         if (hasUncompletedRides) throw new Error('Cannot request another ride.');
 
-        const newRideId = crypto.randomUUID();
-        await this.rideDAO?.requestRide({
-            rideId: newRideId,
-            passengerId: input.passengerId,
-            status: 'requested',
-            from: {
-                lat: input.fromLat,
-                long: input.fromLong,
-            },
-            to: {
-                lat: input.toLat,
-                long: input.toLong,
-            },
-            date: new Date().toISOString(),
-        });
+        await this.rideRepository?.requestRide(newRide);
 
-        return { rideId: newRideId };
+        return { rideId: newRide.getRideId() };
     }
 }
 

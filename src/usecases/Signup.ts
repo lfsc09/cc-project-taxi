@@ -1,45 +1,20 @@
-import crypto from 'crypto';
-import { validateCpf } from '../core/validateCpf';
 import { inject } from '../infra/DI';
-import AccountDAO from '../infra/dao/Account/AccountDAO';
+import Account from '../core/entity/Account';
+import AccountRepository from '../infra/repository/Account/AccountRepository';
 
 export default class Signup {
-    @inject('accountDAO')
-    accountDAO?: AccountDAO;
+    @inject('accountRepository')
+    accountRepository?: AccountRepository;
 
     async execute(input: any): Promise<SignupOutput> {
-        if (!this.#isNameValid(input.name)) throw new Error('Invalid name.');
-        if (!this.#isEmailValid(input.email)) throw new Error('Invalid email.');
-        if (!validateCpf(input.cpf)) throw new Error('Invalid cpf.');
-        if (!!input.isDriver && !this.#isCarPlaceValid(input.carPlate)) throw new Error('Invalid car plate.');
+        const newAccount = Account.create(input.name, input.email, input.cpf, input.isPassenger, input.isDriver, input.password, input?.carPlate);
 
-        const accountExists = await this.accountDAO?.isDuplicateByEmail(input.email);
+        const accountExists = await this.accountRepository?.isDuplicateByEmail(newAccount.getEmail());
         if (accountExists) throw new Error('Duplicated account.');
 
-        const newAccountId = crypto.randomUUID();
-        await this.accountDAO?.createAccount({
-            accountId: newAccountId,
-            name: input.name,
-            email: input.email,
-            cpf: input.cpf,
-            isPassenger: !!input.isPassenger,
-            isDriver: !!input.isDriver,
-            password: input.password,
-        });
+        await this.accountRepository?.createAccount(newAccount);
 
-        return { accountId: newAccountId };
-    }
-
-    #isNameValid(name: string): boolean {
-        return !!name.match(/[a-zA-Z] [a-zA-Z]+/);
-    }
-
-    #isEmailValid(email: string): boolean {
-        return !!email.match(/^(.+)@(.+)$/);
-    }
-
-    #isCarPlaceValid(plate: string): boolean {
-        return !!plate.match(/[A-Z]{3}[0-9]{4}/);
+        return { accountId: newAccount.getAccountID() };
     }
 }
 

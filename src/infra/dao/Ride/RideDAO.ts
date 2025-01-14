@@ -1,7 +1,5 @@
 export default interface RideDAO {
     getRideById(rideId: string): Promise<GetRideByIdOutput>;
-    hasUncompletedRides(accountId: string): Promise<boolean>;
-    requestRide(ride: RequestRideInput): Promise<void>;
 }
 
 export interface GetRideByIdOutput {
@@ -15,20 +13,5 @@ export interface GetRideByIdOutput {
     from_long: number;
     to_lat: number;
     to_long: number;
-    date: string;
-}
-
-export interface RequestRideInput {
-    rideId: string;
-    passengerId: string;
-    status: 'requested';
-    from: {
-        lat: number;
-        long: number;
-    };
-    to: {
-        lat: number;
-        long: number;
-    };
     date: string;
 }
