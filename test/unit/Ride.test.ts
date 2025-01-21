@@ -1,3 +1,4 @@
+import { execPath } from 'process';
 import Ride from '../../src/core/entity/Ride';
 
 describe('Entity: Ride', () => {
@@ -171,6 +172,20 @@ describe('Entity: Ride', () => {
         expect(ride.getToLat()).toBe(input.toLat);
         expect(ride.getToLong()).toBe(input.toLong);
         expect(ride.getDate().toISOString()).toBe(input.date);
+    });
+
+    it('Should return "true" for `isInProgress()`', () => {
+        const ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'in_progress', undefined, 50, 10, 10, 12, 12, new Date().toISOString());
+        expect(ride.isInProgress()).toBeTruthy();
+    });
+
+    it('Should return "false" for `isInProgress()`', () => {
+        let ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), undefined, 'requested', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        expect(ride.isInProgress()).toBeFalsy();
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'accepted', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        expect(ride.isInProgress()).toBeFalsy();
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'completed', 50, 18, 10, 10, 12, 12, new Date().toISOString());
+        expect(ride.isInProgress()).toBeFalsy();
     });
 
     it('Should Accept a Ride', () => {

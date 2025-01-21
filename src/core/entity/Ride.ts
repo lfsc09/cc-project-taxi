@@ -68,6 +68,10 @@ export default class Ride {
         return new Ride(undefined, passengerId, undefined, 'requested', undefined, undefined, fromLat, fromLong, toLat, toLong, new Date());
     }
 
+    isInProgress(): boolean {
+        return this.status.getValue() === 'in_progress';
+    }
+
     accept(driverId: string): void {
         this.status = this.status.accept();
         this.driverId = driverId;
