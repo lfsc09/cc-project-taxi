@@ -2,15 +2,15 @@ import Coord from '../vo/Ride/Coord';
 import Status, { StatusFactory } from '../vo/Ride/Status';
 
 export default class Ride {
-    #rideId: string;
-    #passengerId: string;
-    #driverId?: string;
-    #status: Status;
-    #fare?: number;
-    #distance?: number;
-    #from?: Coord;
-    #to?: Coord;
-    #date: Date;
+    private rideId: string;
+    private passengerId: string;
+    private driverId?: string;
+    private status: Status;
+    private fare?: number;
+    private distance?: number;
+    private from?: Coord;
+    private to?: Coord;
+    private date: Date;
 
     private constructor(
         rideId: string | undefined,
@@ -25,15 +25,15 @@ export default class Ride {
         toLong: number | undefined,
         date: Date,
     ) {
-        this.#rideId = !rideId ? crypto.randomUUID() : rideId;
-        this.#passengerId = passengerId;
-        if (driverId) this.#driverId = driverId;
-        this.#status = StatusFactory.create(status);
-        if (fare !== undefined) this.#fare = fare;
-        if (distance !== undefined) this.#distance = distance;
-        if (fromLat !== undefined && fromLong !== undefined) this.#from = new Coord(fromLat, fromLong);
-        if (toLat !== undefined && toLong !== undefined) this.#to = new Coord(toLat, toLong);
-        this.#date = date;
+        this.rideId = !rideId ? crypto.randomUUID() : rideId;
+        this.passengerId = passengerId;
+        if (driverId) this.driverId = driverId;
+        this.status = StatusFactory.create(status);
+        if (fare !== undefined) this.fare = fare;
+        if (distance !== undefined) this.distance = distance;
+        if (fromLat !== undefined && fromLong !== undefined) this.from = new Coord(fromLat, fromLong);
+        if (toLat !== undefined && toLong !== undefined) this.to = new Coord(toLat, toLong);
+        this.date = date;
     }
 
     static restore(
@@ -49,44 +49,65 @@ export default class Ride {
         toLong: number | undefined,
         date: string,
     ): Ride {
-        return new Ride(rideId, passengerId, driverId, status, fare, distance, fromLat, fromLong, toLat, toLong, new Date(date));
+        return new Ride(
+            rideId,
+            passengerId,
+            status === 'requested' ? undefined : driverId,
+            status,
+            status !== 'completed' ? undefined : fare,
+            status !== 'in_progress' && status !== 'completed' ? undefined : distance,
+            fromLat,
+            fromLong,
+            toLat,
+            toLong,
+            new Date(date),
+        );
     }
 
     static create(passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number): Ride {
         return new Ride(undefined, passengerId, undefined, 'requested', undefined, undefined, fromLat, fromLong, toLat, toLong, new Date());
     }
 
+    accept(driverId: string): void {
+        this.status = this.status.accept();
+        this.driverId = driverId;
+    }
+
+    start(): void {
+        this.status = this.status.start();
+    }
+
     getRideId(): string {
-        return this.#rideId;
+        return this.rideId;
     }
     getPassengerId(): string {
-        return this.#passengerId;
+        return this.passengerId;
     }
     getDriverId(): string | undefined {
-        return this.#driverId;
+        return this.driverId;
     }
     getStatus(): string {
-        return this.#status.getValue();
+        return this.status.getValue();
     }
     getFare(): number | undefined {
-        return this.#fare;
+        return this.fare;
     }
     getDistance(): number | undefined {
-        return this.#distance;
+        return this.distance;
     }
     getFromLat(): number | undefined {
-        return this.#from?.getLat();
+        return this.from?.getLat();
     }
     getFromLong(): number | undefined {
-        return this.#from?.getLong();
+        return this.from?.getLong();
     }
     getToLat(): number | undefined {
-        return this.#to?.getLat();
+        return this.to?.getLat();
     }
     getToLong(): number | undefined {
-        return this.#to?.getLong();
+        return this.to?.getLong();
     }
     getDate(): Date {
-        return this.#date;
+        return this.date;
     }
 }

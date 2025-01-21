@@ -7,10 +7,7 @@ export default interface Status {
 }
 
 export class StatusRequested implements Status {
-    private value: 'requested';
-    constructor() {
-        this.value = 'requested';
-    }
+    private value: 'requested' = 'requested';
 
     getValue(): string {
         return this.value;
@@ -30,10 +27,7 @@ export class StatusRequested implements Status {
 }
 
 export class StatusAccepted implements Status {
-    private value: 'accepted';
-    constructor() {
-        this.value = 'accepted';
-    }
+    private value: 'accepted' = 'accepted';
 
     getValue(): string {
         return this.value;
@@ -53,10 +47,7 @@ export class StatusAccepted implements Status {
 }
 
 export class StatusInProgress implements Status {
-    private value: 'in_progress';
-    constructor() {
-        this.value = 'in_progress';
-    }
+    private value: 'in_progress' = 'in_progress';
 
     getValue(): string {
         return this.value;
@@ -76,10 +67,7 @@ export class StatusInProgress implements Status {
 }
 
 export class StatusCompleted implements Status {
-    private value: 'completed';
-    constructor() {
-        this.value = 'completed';
-    }
+    private value: 'completed' = 'completed';
 
     getValue(): string {
         return this.value;

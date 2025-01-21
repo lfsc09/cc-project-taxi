@@ -2,15 +2,15 @@ import express from 'express';
 import HttpServer from './HttpServer';
 
 export default class ExpressAdapter implements HttpServer {
-    #server: any;
+    private server: any;
 
     constructor() {
-        this.#server = express();
-        this.#server.use(express.json());
+        this.server = express();
+        this.server.use(express.json());
     }
 
     register(method: string, url: string, callback: Function): void {
-        this.#server[method](url, async function (req: express.Request, res: express.Response) {
+        this.server[method](url, async function (req: express.Request, res: express.Response) {
             try {
                 const output = await callback(req);
                 res.json(output);
@@ -21,7 +21,7 @@ export default class ExpressAdapter implements HttpServer {
     }
 
     listen(port: number): void {
-        this.#server.listen(port);
+        this.server.listen(port, () => console.log(`Initiate listening at ${3000}`));
     }
 }
 

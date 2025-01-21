@@ -1,14 +1,14 @@
 import Cpf from '../vo/Account/Cpf';
 
 export default class Account {
-    #accountId: string;
-    #name: string;
-    #email: string;
-    #cpf: Cpf;
-    #carPlate?: string;
-    #isPassenger: boolean;
-    #isDriver: boolean;
-    #password: string;
+    private accountId: string;
+    private name: string;
+    private email: string;
+    private cpf: Cpf;
+    private carPlate?: string;
+    private isPassenger: boolean;
+    private isDriver: boolean;
+    private password: string;
 
     private constructor(
         accountId: string | undefined,
@@ -20,19 +20,19 @@ export default class Account {
         isDriver: boolean,
         password: string,
     ) {
-        if (!this.#isNameValid(name)) throw new Error('Invalid name.');
-        if (!this.#isEmailValid(email)) throw new Error('Invalid email.');
+        if (!this.isNameValid(name)) throw new Error('Invalid name.');
+        if (!this.isEmailValid(email)) throw new Error('Invalid email.');
         if (isPassenger && isDriver) throw new Error('Cannot be passenger and driver.');
-        if (isDriver && !this.#isCarPlaceValid(carPlate)) throw new Error('Invalid car plate.');
+        if (isDriver && !this.isCarPlaceValid(carPlate)) throw new Error('Invalid car plate.');
 
-        this.#accountId = !accountId ? crypto.randomUUID() : accountId;
-        this.#name = name;
-        this.#email = email;
-        this.#cpf = new Cpf(cpf);
-        this.#isPassenger = isPassenger;
-        this.#isDriver = isDriver;
-        if (this.#isDriver) this.#carPlate = carPlate;
-        this.#password = password;
+        this.accountId = !accountId ? crypto.randomUUID() : accountId;
+        this.name = name;
+        this.email = email;
+        this.cpf = new Cpf(cpf);
+        this.isPassenger = isPassenger;
+        this.isDriver = isDriver;
+        if (this.isDriver) this.carPlate = carPlate;
+        this.password = password;
     }
 
     static restore(
@@ -71,39 +71,39 @@ export default class Account {
     }
 
     getAccountID(): string {
-        return this.#accountId;
+        return this.accountId;
     }
     getName(): string {
-        return this.#name;
+        return this.name;
     }
     getEmail(): string {
-        return this.#email;
+        return this.email;
     }
     getCpf(): string {
-        return this.#cpf.getValue();
+        return this.cpf.getValue();
     }
     getCarPlate(): string | undefined {
-        return this.#carPlate;
+        return this.carPlate;
     }
     getIsPassenger(): boolean {
-        return this.#isPassenger;
+        return this.isPassenger;
     }
     getIsDriver(): boolean {
-        return this.#isDriver;
+        return this.isDriver;
     }
     getPassword(): string {
-        return this.#password;
+        return this.password;
     }
 
-    #isNameValid(value: string): boolean {
+    private isNameValid(value: string): boolean {
         return !!value.match(/[a-zA-Z] [a-zA-Z]+/);
     }
 
-    #isEmailValid(value: string): boolean {
+    private isEmailValid(value: string): boolean {
         return !!value.match(/^(.+)@(.+)$/);
     }
 
-    #isCarPlaceValid(value?: string): boolean {
+    private isCarPlaceValid(value?: string): boolean {
         if (value === undefined) return false;
         return !!value.match(/[A-Z]{3}[0-9]{4}/);
     }
