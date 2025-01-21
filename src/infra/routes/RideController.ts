@@ -1,8 +1,8 @@
 import AcceptRide from '../../usecases/AcceptRide';
+import FinishRide from '../../usecases/FinishRide';
 import GetRide from '../../usecases/GetRide';
 import RequestRide from '../../usecases/RequestRide';
 import StartRide from '../../usecases/StartRide';
-import UpdatePosition from '../../usecases/UpdatePosition';
 import { inject } from '../DI';
 import { CallbackInput } from '../http/ExpressAdapter';
 import HttpServer from '../http/HttpServer';
@@ -30,11 +30,6 @@ export default class RideController {
         this.httpServer?.register('post', '/ride/start', async (request: CallbackInput) => {
             const input = request.body;
             return await new StartRide().execute(input);
-        });
-
-        this.httpServer?.register('put', '/ride/position', async (request: CallbackInput) => {
-            const input = request.body;
-            return await new UpdatePosition().execute(input);
         });
     }
 }

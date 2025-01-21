@@ -6,6 +6,7 @@ import ExpressAdapter from './infra/http/ExpressAdapter';
 import AccountRepositoryDatabase from './infra/repository/Account/AccountRepositoryDatabase';
 import RideRepositoryDatabase from './infra/repository/Ride/RideRepositoryDatabase';
 import AccountController from './infra/routes/AccountController';
+import PositionController from './infra/routes/PositionController';
 import RideController from './infra/routes/RideController';
 
 try {
@@ -18,6 +19,7 @@ try {
     Registry.getInstance().provide('rideRepository', new RideRepositoryDatabase());
     new AccountController();
     new RideController();
+    new PositionController();
     httpServer.listen(3000);
 } catch (error: any) {
     console.error(error.message);
