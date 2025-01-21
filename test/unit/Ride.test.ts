@@ -3,7 +3,7 @@ import Ride from '../../src/core/entity/Ride';
 describe('Entity: Ride', () => {
     it('Should create new Ride as "Requested"', () => {
         const input = {
-            passengerId: 'fasdffas-fasfasaf-asfasdasf-asd',
+            passengerId: crypto.randomUUID(),
             fromLat: 10,
             fromLong: 10,
             toLat: 12,
@@ -21,8 +21,8 @@ describe('Entity: Ride', () => {
 
     it('Should restore a "Requested" Ride', () => {
         const input = {
-            rideId: 'fd98fd-sd09f0sd-g9sdf98g',
-            passengerId: 'fasdffas-fasfasaf-asfasdasf-asd',
+            rideId: crypto.randomUUID(),
+            passengerId: crypto.randomUUID(),
             status: 'requested',
             fromLat: 10,
             fromLong: 10,
@@ -45,7 +45,10 @@ describe('Entity: Ride', () => {
         );
         expect(ride.getRideId()).toBe(input.rideId);
         expect(ride.getPassengerId()).toBe(input.passengerId);
+        expect(ride.getDriverId()).toBeUndefined();
         expect(ride.getStatus()).toBe(input.status);
+        expect(ride.getFare()).toBeUndefined();
+        expect(ride.getDistance()).toBeUndefined();
         expect(ride.getFromLat()).toBe(input.fromLat);
         expect(ride.getFromLong()).toBe(input.fromLong);
         expect(ride.getToLat()).toBe(input.toLat);
@@ -55,9 +58,9 @@ describe('Entity: Ride', () => {
 
     it('Should restore a "Accepted" Ride', () => {
         const input = {
-            rideId: 'fd98fd-sd09f0sd-g9sdf98g',
-            passengerId: 'fasdffas-fasfasaf-asfasdasf-asd',
-            driverId: 'fasdas-8g9f8g-sas75das',
+            rideId: crypto.randomUUID(),
+            passengerId: crypto.randomUUID(),
+            driverId: crypto.randomUUID(),
             status: 'accepted',
             fromLat: 10,
             fromLong: 10,
@@ -82,6 +85,8 @@ describe('Entity: Ride', () => {
         expect(ride.getPassengerId()).toBe(input.passengerId);
         expect(ride.getDriverId()).toBe(input.driverId);
         expect(ride.getStatus()).toBe(input.status);
+        expect(ride.getFare()).toBeUndefined();
+        expect(ride.getDistance()).toBeUndefined();
         expect(ride.getFromLat()).toBe(input.fromLat);
         expect(ride.getFromLong()).toBe(input.fromLong);
         expect(ride.getToLat()).toBe(input.toLat);
@@ -91,9 +96,9 @@ describe('Entity: Ride', () => {
 
     it('Should restore a "In Progress" Ride', () => {
         const input = {
-            rideId: 'fd98fd-sd09f0sd-g9sdf98g',
-            passengerId: 'fasdffas-fasfasaf-asfasdasf-asd',
-            driverId: 'fasdas-8g9f8g-sas75das',
+            rideId: crypto.randomUUID(),
+            passengerId: crypto.randomUUID(),
+            driverId: crypto.randomUUID(),
             status: 'in_progress',
             distance: 50,
             fromLat: 10,
@@ -106,7 +111,7 @@ describe('Entity: Ride', () => {
             input.rideId,
             input.passengerId,
             input.driverId,
-            input.status as 'accepted',
+            input.status as 'in_progress',
             undefined,
             input.distance,
             input.fromLat,
@@ -119,6 +124,7 @@ describe('Entity: Ride', () => {
         expect(ride.getPassengerId()).toBe(input.passengerId);
         expect(ride.getDriverId()).toBe(input.driverId);
         expect(ride.getStatus()).toBe(input.status);
+        expect(ride.getFare()).toBeUndefined();
         expect(ride.getDistance()).toBe(input.distance);
         expect(ride.getFromLat()).toBe(input.fromLat);
         expect(ride.getFromLong()).toBe(input.fromLong);
@@ -129,10 +135,10 @@ describe('Entity: Ride', () => {
 
     it('Should restore a "Completed" Ride', () => {
         const input = {
-            rideId: 'fd98fd-sd09f0sd-g9sdf98g',
-            passengerId: 'fasdffas-fasfasaf-asfasdasf-asd',
-            driverId: 'fasdas-8g9f8g-sas75das',
-            status: 'in_progress',
+            rideId: crypto.randomUUID(),
+            passengerId: crypto.randomUUID(),
+            driverId: crypto.randomUUID(),
+            status: 'completed',
             fare: 49.78,
             distance: 50,
             fromLat: 10,
@@ -145,7 +151,7 @@ describe('Entity: Ride', () => {
             input.rideId,
             input.passengerId,
             input.driverId,
-            input.status as 'accepted',
+            input.status as 'completed',
             input.fare,
             input.distance,
             input.fromLat,
@@ -165,5 +171,38 @@ describe('Entity: Ride', () => {
         expect(ride.getToLat()).toBe(input.toLat);
         expect(ride.getToLong()).toBe(input.toLong);
         expect(ride.getDate().toISOString()).toBe(input.date);
+    });
+
+    it('Should Accept a Ride', () => {
+        const driverId = crypto.randomUUID();
+        const ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), undefined, 'requested', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        ride.accept(driverId);
+        expect(ride.getDriverId()).toBe(driverId);
+        expect(ride.getStatus()).toBe('accepted');
+    });
+
+    it('Should not Accept a Ride', () => {
+        const driverId = crypto.randomUUID();
+        let ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'accepted', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.accept(driverId)).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'in_progress', undefined, 15, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.accept(driverId)).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'completed', 40, 15, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.accept(driverId)).toThrow(new Error('Invalid state.'));
+    });
+
+    it('Should Start a Ride', () => {
+        const ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'accepted', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        ride.start();
+        expect(ride.getStatus()).toBe('in_progress');
+    });
+
+    it('Should not Start a Ride', () => {
+        let ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), undefined, 'requested', undefined, undefined, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.start()).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'in_progress', undefined, 15, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.start()).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'completed', 40, 15, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.start()).toThrow(new Error('Invalid state.'));
     });
 });

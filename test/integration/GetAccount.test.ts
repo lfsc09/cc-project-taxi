@@ -4,14 +4,15 @@ import GetAccount from '../../src/usecases/GetAccount';
 
 describe('UseCase: GetAccount', () => {
     let getAccount: GetAccount;
+    let accountDAO: AccountDAOMemory;
 
     beforeEach(() => {
         Registry.getInstance().provide('accountDAO', new AccountDAOMemory());
         getAccount = new GetAccount();
+        accountDAO = Registry.getInstance().inject('accountDAO');
     });
 
     it('Should return Account', async () => {
-        const accountDAO: AccountDAOMemory = Registry.getInstance().inject('accountDAO');
         const input = {
             accountId: crypto.randomUUID(),
             name: 'Marco Prosta',
@@ -31,7 +32,6 @@ describe('UseCase: GetAccount', () => {
             is_driver: input.isDriver,
             password: input.password,
         });
-
         const output = await getAccount.execute(input.accountId);
         expect(output?.account_id).toBe(input.accountId);
         expect(output?.name).toBe(input.name);

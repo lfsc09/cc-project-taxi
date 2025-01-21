@@ -18,7 +18,7 @@ export default class RequestRide {
         const hasUncompletedRides = await this.rideRepository?.hasUncompletedRides(newRide.getPassengerId());
         if (hasUncompletedRides) throw new Error('Cannot request another ride.');
 
-        await this.rideRepository?.requestRide(newRide);
+        await this.rideRepository?.createRide(newRide);
 
         return { rideId: newRide.getRideId() };
     }

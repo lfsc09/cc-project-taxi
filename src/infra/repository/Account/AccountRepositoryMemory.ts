@@ -12,6 +12,10 @@ export default class AccountRepositoryMemory implements AccountRepository {
         return !!this.accounts.find((account: Account) => account.getAccountID() === accountId && account.getIsPassenger());
     }
 
+    async isAccountDriver(accountId: string): Promise<boolean> {
+        return !!this.accounts.find((account: Account) => account.getAccountID() === accountId && account.getIsDriver());
+    }
+
     async createAccount(account: Account): Promise<void> {
         this.accounts.push(account);
     }

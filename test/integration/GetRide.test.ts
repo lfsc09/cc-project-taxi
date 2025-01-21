@@ -4,14 +4,15 @@ import GetRide from '../../src/usecases/GetRide';
 
 describe('Usecase: GetRide', () => {
     let getRide: GetRide;
+    let rideDAO: RideDAOMemory;
 
     beforeEach(() => {
         Registry.getInstance().provide('rideDAO', new RideDAOMemory());
         getRide = new GetRide();
+        rideDAO = Registry.getInstance().inject('rideDAO');
     });
 
     it('Should return a "Requested" Ride', async () => {
-        const rideDAO: RideDAOMemory = Registry.getInstance().inject('rideDAO');
         const input = {
             rideId: crypto.randomUUID(),
             passengerId: crypto.randomUUID(),
@@ -35,7 +36,6 @@ describe('Usecase: GetRide', () => {
             to_long: input.toLong,
             date: input.date,
         });
-
         const output = await getRide.execute(input.rideId);
         expect(output?.ride_id).toBe(input.rideId);
         expect(output?.passenger_id).toBe(input.passengerId);

@@ -5,28 +5,25 @@ axios.defaults.validateStatus = function () {
 };
 
 describe('e2e: /getRide', () => {
-    it('Should return a Ride', async () => {
-        const accountInput = { name: 'Marco Prosta', email: `marco${new Date().getTime()}@gmail.com`, cpf: '97456321558', isPassenger: true, isDriver: false, password: '123456' };
-        const responseSignup = await axios.post('http://localhost:3000/signup', accountInput);
-        const passengerAccountId = responseSignup?.data?.accountId;
-        expect(passengerAccountId).toBeDefined();
-
-        const rideInput = {};
-        const responseRequestRide = await axios.post('http://localhost:3000/requestRide', rideInput);
-        const rideId = responseRequestRide?.data?.rideId;
-        expect(rideId).toBeDefined();
-
-        const responseGetRide = await axios.get(`http://localhost:3000/getRide?id=${rideId}`);
-        const outputGetRide = responseGetRide?.data;
-        expect(outputGetRide.ride_id).toBe(rideId);
-        expect(outputGetRide.passenger_id).toBe(passengerAccountId);
-        expect(outputGetRide.status).toBe('requested');
+    it('Should return a "Requested" Ride', async () => {
+        const input = {
+            rideId: '0d63a8cf-1607-4b53-b9a4-1d9623caa8f9',
+            passengerId: '87549960-5557-443e-86c7-3021b3cf9e04',
+            status: 'requested',
+            date: '2024-05-17T18:09:14.421Z',
+        };
+        const responseGetRide = await axios.get(`http://localhost:3000/ride/${input.rideId}`);
+        const output = responseGetRide?.data;
+        expect(output.ride_id).toBe(input.rideId);
+        expect(output.passenger_id).toBe(input.passengerId);
+        expect(output.status).toBe(input.status);
+        expect(output.date).toBe(input.date);
     });
 
     it('Should return error for not found', async () => {
-        const responseGetAccount = await axios.get(`http://localhost:3000/getRide?id=${crypto.randomUUID()}`);
-        expect(responseGetAccount?.status).toBe(404);
-        const errorMessage = responseGetAccount?.data?.message;
+        const responseGetRide = await axios.get(`http://localhost:3000/ride/${crypto.randomUUID()}`);
+        expect(responseGetRide?.status).toBe(404);
+        const errorMessage = responseGetRide?.data?.message;
         expect(errorMessage).toBe('Not Found.');
     });
 });
