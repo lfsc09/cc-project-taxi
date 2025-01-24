@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "rm -rf ./build && tsc",
-        "dev": "nodemon --watch src -e ts --exec node --env-file=./env/.env.development -r ts-node/register src/main.ts",
+        "dev": "nodemon --watch src -e ts --exec node --env-file=./env/.env.dev -r ts-node/register src/main.ts",
         "test-all": "jest",
         "test-unit": "jest --findRelatedTests ./test/unit/*.test.ts",
         "test-integration": "jest --findRelatedTests ./test/integration/*.test.ts",
