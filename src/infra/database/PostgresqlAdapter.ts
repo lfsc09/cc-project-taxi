@@ -22,6 +22,10 @@ export default class PgPromiseAdapter implements DatabaseConnection {
         return this.connection?.query(queryString, params);
     }
 
+    each(queryString: string, params: any, callback: (row: any, index: number, data: any[]) => void): Promise<any> {
+        return this.connection?.each(queryString, params, callback);
+    }
+
     async end(): Promise<void> {
         await this.connection?.$pool.end();
     }
