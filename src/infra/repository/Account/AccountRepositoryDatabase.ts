@@ -12,7 +12,7 @@ export default class AccountRepositoryDatabase implements AccountRepository {
             `
                 SELECT *
                 FROM
-                    ccca.account
+                    account
                 WHERE
                     email = $1
                 ;
@@ -27,7 +27,7 @@ export default class AccountRepositoryDatabase implements AccountRepository {
             `
                 SELECT *
                 FROM
-                    ccca.account
+                    account
                 WHERE
                     account_id = $1 AND
                     is_passenger = true
@@ -43,7 +43,7 @@ export default class AccountRepositoryDatabase implements AccountRepository {
             `
                 SELECT *
                 FROM
-                    ccca.account
+                    account
                 WHERE
                     account_id = $1 AND
                     is_driver = true
@@ -58,7 +58,7 @@ export default class AccountRepositoryDatabase implements AccountRepository {
         await this.dbConn?.query(
             `
                 INSERT INTO
-                    ccca.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password)
+                    account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password)
                 VALUES
                     ($1, $2, $3, $4, $5, $6, $7, $8)
                 ;

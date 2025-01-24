@@ -12,7 +12,7 @@ export default class RideRepositoryDatabase implements RideRepository {
             `
                 SELECT *
                 FROM
-                    ccca.ride
+                    ride
                 WHERE
                     ride_id = $1
                 ;
@@ -41,7 +41,7 @@ export default class RideRepositoryDatabase implements RideRepository {
             `
                 SELECT *
                 FROM
-                    ccca.ride
+                    ride
                 WHERE
                     passenger_id = $1 AND
                     status <> "completed"
@@ -57,7 +57,7 @@ export default class RideRepositoryDatabase implements RideRepository {
             `
                 SELECT *
                 FROM
-                    ccca.ride
+                    ride
                 WHERE
                     driver_id = $1 AND
                     (status = "accepted" OR status = "in_progress")
@@ -72,7 +72,7 @@ export default class RideRepositoryDatabase implements RideRepository {
         await this.dbConn?.query(
             `
                 INSERT INTO
-                    ccca.account (ride_id, passenger_id, status, from_lat, from_long, to_lat, to_long, date)
+                    account (ride_id, passenger_id, status, from_lat, from_long, to_lat, to_long, date)
                 VALUES
                     ($1, $2, $3, $4, $5, $6, $7, $8)
                 ;
@@ -85,7 +85,7 @@ export default class RideRepositoryDatabase implements RideRepository {
         await this.dbConn?.query(
             `
                 UPDATE
-                    ccca.account
+                    account
                 SET
                     driver_id = $2,
                     status = $3,

@@ -12,7 +12,7 @@ export default class PositionRepositoryDatabase implements PositionRepository {
             `
                 SELECT *
                 FROM
-                    ccca.position
+                    position
                 WHERE
                     position_id = $1
                 ;
@@ -28,7 +28,7 @@ export default class PositionRepositoryDatabase implements PositionRepository {
             `
                 SELECT *
                 FROM
-                    ccca.position
+                    position
                 WHERE
                     ride_id = $1
                 ;
@@ -46,7 +46,7 @@ export default class PositionRepositoryDatabase implements PositionRepository {
         await this.dbConn?.query(
             `
                 INSERT INTO
-                    ccca.position (position_id, ride_id, lat, long, date)
+                    position (position_id, ride_id, lat, long, date)
                 VALUES
                     ($1, $2, $3, $4, $5)
                 ;

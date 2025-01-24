@@ -11,7 +11,7 @@ export default class AccountDAODatabase implements AccountDAO {
             `
                 SELECT *
                 FROM
-                    ccca.account
+                    account
                 WHERE
                     account_id = $1
                 ;

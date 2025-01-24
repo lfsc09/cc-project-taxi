@@ -11,7 +11,7 @@ export default class RideDAODatabase implements RideDAO {
             `
                 SELECT *
                 FROM
-                    ccca.ride
+                    ride
                 WHERE
                     ride_id = $1
                 ;

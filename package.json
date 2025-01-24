@@ -6,10 +6,11 @@
     "scripts": {
         "build": "rm -rf ./build && tsc",
         "dev": "nodemon --watch src -e ts --exec node --env-file=./env/.env.dev -r ts-node/register src/main.ts",
+        "seed": "node --env-file=./env/.env.dev -r ts-node/register seed/seed-database.ts",
         "test-all": "jest",
         "test-unit": "jest --findRelatedTests ./test/unit/*.test.ts",
         "test-integration": "jest --findRelatedTests ./test/integration/*.test.ts",
-        "test-e2e": "jest --findRelatedTests ./test/e2e/*.test.ts"
+        "test-e2e": "npm run seed && concurrently -k \"node --env-file=./env/.env.dev -r ts-node/register src/main.ts\" \"jest --findRelatedTests ./test/e2e/*.test.ts\""
     },
     "keywords": [],
     "author": "your-email",
@@ -18,11 +19,13 @@
         "@types/express": "^5.0.0",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.10.2",
-        "axios": "^1.7.9",
+        "@types/supertest": "^6.0.2",
+        "concurrently": "^9.1.2",
         "jest": "^29.7.0",
         "nodemon": "^3.1.9",
         "prettier": "^3.4.2",
         "prettier-plugin-organize-imports": "^4.1.0",
+        "supertest": "^7.0.0",
         "ts-jest": "^29.2.5",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2"
