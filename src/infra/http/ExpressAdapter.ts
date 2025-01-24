@@ -15,7 +15,11 @@ export default class ExpressAdapter implements HttpServer {
                 const output = await callback(req);
                 res.json(output);
             } catch (error: any) {
-                res.status(422).json({ message: error.message });
+                if (/[Nn]ot [Ff]ound/g.test(error.message)) {
+                    res.status(404).json({ message: error.message });
+                } else {
+                    res.status(422).json({ message: error.message });
+                }
             }
         });
     }
