@@ -72,3 +72,28 @@ Project will be built in `./build`.
 npm run build
 ```
 
+</br>
+
+# What I learned
+
+## For auto Seeding Database for Tests
+
+#### Problem
+
+I tried to seed the database through `Docker`, but it kept giving me errors on the `INSERT`s.
+
+I had a file `postgresql-seed.sql` with the inserts, and it was mapped to the `initdb.d` of the DB image. It ran in the correct order, but I could not figure out why insertions were not working.
+
+#### Solution
+
+I moved the responsability to `Node`, and created the `seed-database.ts` script to run on `test-e2e` npm script just before the tests.
+
+## Npm `test-e2e` problem
+
+#### Problem
+
+I was having trouble initiating the API before running the tests, since the API would take a while until ready. Also I wanted to auto finish the API process after the tests ended.
+
+#### Solution
+
+Using the `concurrently` library helped solve both issues.
