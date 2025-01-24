@@ -23,6 +23,25 @@ export default class PositionRepositoryDatabase implements PositionRepository {
         return undefined;
     }
 
+    async getRidePositions(rideId: string): Promise<Position[] | undefined> {
+        const [positions] = await this.dbConn?.each(
+            `
+                SELECT *
+                FROM
+                    ccca.position
+                WHERE
+                    ride_id = $1
+                ;
+            `,
+            [rideId],
+            (row: any) => {
+                row = Position.restore(row.row_id, row.ride_id, row.lat, row.long, row.date);
+            }
+        );
+        if (positions) return positions;
+        return undefined;
+    }
+
     async createPosition(position: Position): Promise<void> {
         await this.dbConn?.query(
             `

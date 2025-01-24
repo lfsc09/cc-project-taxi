@@ -8,6 +8,10 @@ export default class PositionRepositoryMemory implements PositionRepository {
         return this.positions.find((position: Position) => position.getPositionId() === positionId);
     }
 
+    async getRidePositions(rideId: string): Promise<Position[] | undefined> {
+        return this.positions.filter((position: Position) => position.getRideId() === rideId);
+    }
+
     async createPosition(position: Position): Promise<void> {
         this.positions.push(position);
     }

@@ -1,4 +1,4 @@
-import { execPath } from 'process';
+import Position from '../../src/core/entity/Position';
 import Ride from '../../src/core/entity/Ride';
 
 describe('Entity: Ride', () => {
@@ -219,5 +219,113 @@ describe('Entity: Ride', () => {
         expect(() => ride.start()).toThrow(new Error('Invalid state.'));
         ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'completed', 40, 15, 10, 10, 12, 12, new Date().toISOString());
         expect(() => ride.start()).toThrow(new Error('Invalid state.'));
+    });
+
+    it('Should Finish a Ride [Normal fare]', () => {
+        const rideId = crypto.randomUUID();
+        const ride = Ride.restore(
+            rideId,
+            crypto.randomUUID(),
+            crypto.randomUUID(),
+            'in_progress',
+            0,
+            0,
+            -25.444069,
+            -49.3423676,
+            -25.4454575,
+            -49.3077859,
+            new Date().toISOString(),
+        );
+        let positions: Position[] = [
+            [-25.444069, -49.3423676],
+            [-25.4453673, -49.3376684],
+            [-25.4498939, -49.3295038],
+            [-25.4511146, -49.3201911],
+            [-25.4491577, -49.3125951],
+            [-25.4482155, -49.3077564],
+            [-25.4454575, -49.3077859],
+        ].map((pos) => Position.restore(crypto.randomUUID(), rideId, pos[0], pos[1], new Date('2025-01-05T14:00:00-03:00').toISOString()));
+        ride.finish(positions);
+        expect(ride.getStatus()).toBe('completed');
+        expect(ride.getDistance()).toBe(3.99);
+        expect(ride.getFare()).toBe(8.38);
+    });
+
+    it('Should Finish a Ride [Night fare]', () => {
+        const rideId = crypto.randomUUID();
+        const ride = Ride.restore(
+            rideId,
+            crypto.randomUUID(),
+            crypto.randomUUID(),
+            'in_progress',
+            0,
+            0,
+            -25.444069,
+            -49.3423676,
+            -25.4454575,
+            -49.3077859,
+            new Date().toISOString(),
+        );
+        let positions: Position[] = [
+            [-25.444069, -49.3423676],
+            [-25.4453673, -49.3376684],
+            [-25.4498939, -49.3295038],
+            [-25.4511146, -49.3201911],
+            [-25.4491577, -49.3125951],
+            [-25.4482155, -49.3077564],
+            [-25.4454575, -49.3077859],
+        ].map((pos) => Position.restore(crypto.randomUUID(), rideId, pos[0], pos[1], new Date('2025-01-05T23:00:00-03:00').toISOString()));
+        ride.finish(positions);
+        expect(ride.getStatus()).toBe('completed');
+        expect(ride.getDistance()).toBe(3.99);
+        expect(ride.getFare()).toBe(15.56);
+    });
+
+    it('Should Finish a Ride [Promo day]', () => {
+        const rideId = crypto.randomUUID();
+        const ride = Ride.restore(
+            rideId,
+            crypto.randomUUID(),
+            crypto.randomUUID(),
+            'in_progress',
+            0,
+            0,
+            -25.444069,
+            -49.3423676,
+            -25.4454575,
+            -49.3077859,
+            new Date().toISOString(),
+        );
+        let positions: Position[] = [
+            [-25.444069, -49.3423676],
+            [-25.4453673, -49.3376684],
+            [-25.4498939, -49.3295038],
+            [-25.4511146, -49.3201911],
+            [-25.4491577, -49.3125951],
+            [-25.4482155, -49.3077564],
+            [-25.4454575, -49.3077859],
+        ].map((pos) => Position.restore(crypto.randomUUID(), rideId, pos[0], pos[1], new Date('2025-01-01T20:00:00-03:00').toISOString()));
+        ride.finish(positions);
+        expect(ride.getStatus()).toBe('completed');
+        expect(ride.getDistance()).toBe(3.99);
+        expect(ride.getFare()).toBe(3.99);
+    });
+
+    it('Should not Finish a Ride [No positions]', () => {
+        const ride = Ride.restore(crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), 'in_progress', 0, 0, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.finish([])).toThrow(new Error('No positions found.'));
+    });
+
+    it('Should not Finish a Ride [Invalid states]', () => {
+        const rideId = crypto.randomUUID();
+        let positions: Position[] = [[-25.444069, -49.3423676]].map((pos) =>
+            Position.restore(crypto.randomUUID(), rideId, pos[0], pos[1], new Date('2025-01-01T20:00:00-03:00').toISOString()),
+        );
+        let ride = Ride.restore(rideId, crypto.randomUUID(), undefined, 'requested', 0, 0, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.finish(positions)).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(rideId, crypto.randomUUID(), crypto.randomUUID(), 'accepted', 0, 0, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.finish(positions)).toThrow(new Error('Invalid state.'));
+        ride = Ride.restore(rideId, crypto.randomUUID(), crypto.randomUUID(), 'completed', 10, 50, 10, 10, 12, 12, new Date().toISOString());
+        expect(() => ride.finish(positions)).toThrow(new Error('Invalid state.'));
     });
 });

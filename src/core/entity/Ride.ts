@@ -1,5 +1,7 @@
+import DistanceCalculator from '../service/DistanceAndFareCalculator';
 import Coord from '../vo/Ride/Coord';
 import Status, { StatusFactory } from '../vo/Ride/Status';
+import Position from './Position';
 
 export default class Ride {
     private rideId: string;
@@ -79,6 +81,14 @@ export default class Ride {
 
     start(): void {
         this.status = this.status.start();
+    }
+
+    finish(positions?: Position[]): void {
+        if (!positions || positions.length === 0) throw new Error('No positions found.');
+        this.status = this.status.end();
+        const { totalDistance, totalFare } = DistanceCalculator.calculateTotalDistanceAndFare(positions);
+        this.distance = totalDistance;
+        this.fare = totalFare;
     }
 
     getRideId(): string {

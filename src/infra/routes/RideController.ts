@@ -31,5 +31,10 @@ export default class RideController {
             const input = request.body;
             return await new StartRide().execute(input);
         });
+
+        this.httpServer?.register('post', '/ride/finish', async (request: CallbackInput) => {
+            const input = request.body;
+            return await new FinishRide().execute(input);
+        });
     }
 }
